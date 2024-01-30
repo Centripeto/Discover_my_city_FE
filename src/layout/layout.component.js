@@ -18,7 +18,10 @@ import ListItemText from "@mui/material/ListItemText";
 import { useState } from "react";
 import HomeIcon from "@mui/icons-material/Home";
 import PlaceIcon from "@mui/icons-material/Place";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ListItemButton } from "@mui/material";
+import { useThemeMode } from "../providers/ThemeModeProvider";
 
 const drawerWidth = 240;
 
@@ -139,6 +142,7 @@ const sideMenu = [
 
 const Layout = () => {
   const theme = useTheme();
+  const { toggleColorMode } = useThemeMode();
   const [open, setOpen] = useState(false);
 
   const handleDrawerOpen = () => {
@@ -190,6 +194,13 @@ const Layout = () => {
         }}
       >
         <DrawerHeader />
+        <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
+          {theme.palette.mode === "dark" ? (
+            <Brightness7Icon />
+          ) : (
+            <Brightness4Icon />
+          )}
+        </IconButton>
         <Outlet />
       </Box>
     </Box>

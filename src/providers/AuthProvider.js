@@ -1,6 +1,6 @@
 import { useContext, createContext, useState } from "react";
 import { login as loginApi, logout as logoutApi } from "../api/authentication";
-const AuthContext = createContext();
+const AuthContext = createContext({ toggleColorMode: () => {}});
 
 const AuthProvider = ({ children }) => {
   const [accessToken, setAccesToken] = useState(

@@ -6,20 +6,17 @@ import "@fontsource/roboto/700.css";
 
 import { BrowserRouter } from "react-router-dom";
 import AppRouter from "./app.router";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AuthProvider from "./providers/AuthProvider";
-
-const darkTheme = createTheme({ palette: { mode: 'dark' } });
-// const lightTheme = createTheme({ palette: { mode: 'light' } });
+import ThemeModeProvider from "./providers/ThemeModeProvider";
 
 const App = () => (
-  <ThemeProvider theme={darkTheme}>
+  <ThemeModeProvider>
     <AuthProvider>
       <BrowserRouter>
         <AppRouter />
       </BrowserRouter>
     </AuthProvider>
-  </ThemeProvider>
+  </ThemeModeProvider>
 );
 
 export default App;
