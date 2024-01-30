@@ -9,10 +9,11 @@ import AppRouter from "./app.router";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AuthProvider from "./providers/AuthProvider";
 
-const theme = createTheme();
+const darkTheme = createTheme({ palette: { mode: 'dark' } });
+// const lightTheme = createTheme({ palette: { mode: 'light' } });
 
 const App = () => (
-  <ThemeProvider theme={theme}>
+  <ThemeProvider theme={darkTheme}>
     <AuthProvider>
       <BrowserRouter>
         <AppRouter />
