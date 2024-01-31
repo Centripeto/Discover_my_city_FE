@@ -37,7 +37,7 @@ import { useThemeMode } from "../providers/ThemeModeProvider";
 import { useAuth } from "../providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import LoginIcon from '@mui/icons-material/Login';
+import LoginIcon from "@mui/icons-material/Login";
 
 const drawerWidth = 240;
 
@@ -98,7 +98,7 @@ const DrawerMobile = ({
   handleDrawerClose,
   open,
   sideMenu,
-  additionalMenu,
+  children,
 }) => {
   return (
     <Drawer
@@ -131,14 +131,7 @@ const DrawerMobile = ({
         ))}
       </List>
       <Divider />
-      <List>
-        {additionalMenu?.map((item) => (
-          <ListItem key={item.label} component={Link} to={item.path}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
-          </ListItem>
-        ))}
-      </List>
+      {children}
     </Drawer>
   );
 };
@@ -182,8 +175,8 @@ const LoginDialog = ({ open, handleClose, login }) => {
       aria-labelledby="login-dialog"
     >
       <DialogTitle id="login-dialog">Login</DialogTitle>
-      <DialogContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DialogContent>
           <Grid container spacing={1}>
             <Grid container item xs={12} spacing={3}>
               <Grid item xs={4}>
@@ -237,21 +230,21 @@ const LoginDialog = ({ open, handleClose, login }) => {
             </Grid>
             <Grid item></Grid>
           </Grid>
-        </form>
-      </DialogContent>
-      <DialogActions>
-        <Button autoFocus onClick={handleClose}>
-          Cancel
-        </Button>
-        <Button
-          type="submit"
-          disabled={submitCount > 0 && !isValid}
-          variant="outlined"
-          color="primary"
-        >
-          Login
-        </Button>
-      </DialogActions>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={submitCount > 0 && !isValid}
+            variant="outlined"
+            color="primary"
+          >
+            Login
+          </Button>
+        </DialogActions>
+      </form>
     </Dialog>
   );
 };
@@ -278,12 +271,12 @@ const Layout = () => {
 
   const ChangeThemeIcon = () => (
     <IconButton sx={{ ml: 1 }} onClick={toggleColorMode} color="inherit">
-          {theme.palette.mode === "dark" ? (
-            <Brightness7Icon />
-          ) : (
-            <Brightness4Icon />
-          )}
-        </IconButton>
+      {theme.palette.mode === "dark" ? (
+        <Brightness7Icon />
+      ) : (
+        <Brightness4Icon />
+      )}
+    </IconButton>
   );
 
   const handleLoginDialogClose = () => {
@@ -358,7 +351,32 @@ const Layout = () => {
           handleDrawerClose={handleDrawerClose}
           theme={theme}
           sideMenu={sideMenu}
-        />
+        >
+          <List>
+            {!accessToken ? (
+              <ListItem key="login" disablePadding>
+                <ListItemButton onClick={handleLoginDialogOpen}>
+                  <ListItemIcon>
+                    <LoginIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Login" />
+                </ListItemButton>
+              </ListItem>
+            ) : null}
+            <ListItem key="theme" disablePadding>
+              <ListItemButton onClick={toggleColorMode}>
+                <ListItemIcon>
+                  {theme.palette.mode === "dark" ? (
+                    <Brightness7Icon />
+                  ) : (
+                    <Brightness4Icon />
+                  )}
+                </ListItemIcon>
+                <ListItemText primary="Theme" />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </DrawerMobile>
         <DrawerWeb sideMenu={sideMenu} />
       </Box>
       <Box

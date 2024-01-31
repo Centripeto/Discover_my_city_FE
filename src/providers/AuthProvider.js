@@ -11,11 +11,13 @@ const AuthProvider = ({ children }) => {
   );
 
   const login = async ({ username, password }) => {
+    console.log(username, password)
       const response = await loginApi({ password, username });
       if (response) {
         setAccesToken(response.accessToken);
         setRefreshToken(response.refreshToken);
         localStorage.setItem("accessToken", response.accessToken);
+        localStorage.setItem("refreshToken", response.refreshToken);
       }
   };
 
