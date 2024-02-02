@@ -25,6 +25,7 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  DialogContentText,
   DialogTitle,
   FormControl,
   Grid,
@@ -38,6 +39,7 @@ import { useAuth } from "../providers/AuthProvider";
 import { useForm } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoginIcon from "@mui/icons-material/Login";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const drawerWidth = 240;
 
@@ -136,6 +138,41 @@ const DrawerMobile = ({
   );
 };
 
+const LogoutDialog = ({ open, handleClose, logout }) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const handleLogout = async () => {
+    try {
+      await logout();
+      handleClose();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <Dialog
+      fullScreen={fullScreen}
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="logout-dialog"
+    >
+      <DialogTitle id="logout-dialog-title">Logout</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="logout-dialog-description">
+          Sei sicuro di voler uscire?
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} autoFocus>
+          No
+        </Button>
+        <Button onClick={handleLogout}>Si</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const LoginDialog = ({ open, handleClose, login }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -179,7 +216,7 @@ const LoginDialog = ({ open, handleClose, login }) => {
         <DialogContent>
           <Grid container spacing={1}>
             <Grid container item xs={12} spacing={3}>
-              <Grid item xs={4}>
+              <Grid item xs={12}>
                 <FormControl fullWidth variant="outlined">
                   <TextField
                     id="username"
@@ -196,7 +233,7 @@ const LoginDialog = ({ open, handleClose, login }) => {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={12}>
                 <FormControl fullWidth variant="outlined">
                   <TextField
                     id="password"
@@ -265,8 +302,9 @@ const sideMenu = [
 const Layout = () => {
   const theme = useTheme();
   const { toggleColorMode } = useThemeMode();
-  const { login, accessToken } = useAuth();
+  const { login, accessToken, logout, user } = useAuth();
   const [isLoginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [isLogoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
 
   const ChangeThemeIcon = () => (
@@ -284,6 +322,13 @@ const Layout = () => {
   };
   const handleLoginDialogOpen = () => {
     setLoginDialogOpen(true);
+  };
+
+  const handleLogoutDialogClose = () => {
+    setLogoutDialogOpen(false);
+  };
+  const handleLogoutDialogOpen = () => {
+    setLogoutDialogOpen(true);
   };
 
   const handleDrawerOpen = () => {
@@ -306,6 +351,11 @@ const Layout = () => {
           <Typography variant="h6" noWrap component="div" flexGrow={1}>
             Discover My City
           </Typography>
+          {user && (
+            <Typography variant="h7" component="span" sx={{ mx: 2 }}>
+              {user.name} {user.lastname}
+            </Typography>
+          )}
           {!accessToken ? (
             <IconButton
               color="inherit"
@@ -316,7 +366,17 @@ const Layout = () => {
             >
               <LoginIcon />
             </IconButton>
-          ) : null}
+          ) : (
+            <IconButton
+              color="inherit"
+              aria-label="open logout"
+              onClick={handleLogoutDialogOpen}
+              edge="start"
+              xs={{ mr: 2 }}
+            >
+              <LogoutIcon />
+            </IconButton>
+          )}
           <ChangeThemeIcon />
         </Toolbar>
       </AppBar>
@@ -362,7 +422,16 @@ const Layout = () => {
                   <ListItemText primary="Login" />
                 </ListItemButton>
               </ListItem>
-            ) : null}
+            ) : (
+              <ListItem key="logout" disablePadding>
+                <ListItemButton onClick={handleLogoutDialogOpen}>
+                  <ListItemIcon>
+                    <LogoutIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Logout" />
+                </ListItemButton>
+              </ListItem>
+            )}
             <ListItem key="theme" disablePadding>
               <ListItemButton onClick={toggleColorMode}>
                 <ListItemIcon>
@@ -389,11 +458,18 @@ const Layout = () => {
       >
         <DrawerHeader />
         <Outlet />
-        {!accessToken ? (
+        {!accessToken && isLoginDialogOpen ? (
           <LoginDialog
             open={isLoginDialogOpen}
             handleClose={handleLoginDialogClose}
             login={login}
+          />
+        ) : null}
+        {isLogoutDialogOpen ? (
+          <LogoutDialog
+            open={isLogoutDialogOpen}
+            handleClose={handleLogoutDialogClose}
+            logout={logout}
           />
         ) : null}
       </Box>

@@ -10,7 +10,12 @@ export const login = ({ username, password }) =>
       refreshToken: response.response.refreshToken,
     }));
 
-export const logout = ({ token }) =>
-  httpClient.get(`/${ROUTE}/authenticate`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export const whoami = ({ token }) =>
+httpClient.get(`/user/whoami`, {
+  headers: { Authorization: `Bearer ${token}` },
+}).then(response => ({
+  name: response.response.name,
+  username: response.response.username,
+  lastname: response.response.lastname,
+  role: response.response.role,
+}));
