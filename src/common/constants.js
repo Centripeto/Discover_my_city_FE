@@ -1,0 +1,5 @@
+export const ROLE = Object.freeze({
+    ADMIN: 'ADMIN',
+    CONTRIBUTOR: 'CONTRIBUTOR',
+    AUTH_CONTRIBUTOR: 'AUTH_CONTRIBUTOR'
+});

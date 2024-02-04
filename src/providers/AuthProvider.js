@@ -4,7 +4,7 @@ const AuthContext = createContext({ toggleColorMode: () => {} });
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(
-    JSON.parse(localStorage.getItem("whoami")) || null
+    JSON.parse(localStorage.getItem("user")) || null
   );
 
   const [accessToken, setAccesToken] = useState(

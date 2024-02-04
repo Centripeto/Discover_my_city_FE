@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -16,8 +16,6 @@ import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { useState } from "react";
-import HomeIcon from "@mui/icons-material/Home";
-import PlaceIcon from "@mui/icons-material/Place";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import {
@@ -40,6 +38,7 @@ import { useForm } from "react-hook-form";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
+import Menu from "./menu.component";
 
 const drawerWidth = 240;
 
@@ -68,7 +67,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-end",
 }));
 
-const DrawerWeb = ({ sideMenu }) => {
+const DrawerWeb = ({ role }) => {
   return (
     <Drawer
       sx={{
@@ -81,16 +80,7 @@ const DrawerWeb = ({ sideMenu }) => {
     >
       <DrawerHeader></DrawerHeader>
       <Divider />
-      <List>
-        {sideMenu.map((item) => (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton LinkComponent={Link} to={item.path}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <Menu role={role}/>
     </Drawer>
   );
 };
@@ -99,7 +89,7 @@ const DrawerMobile = ({
   theme,
   handleDrawerClose,
   open,
-  sideMenu,
+  role,
   children,
 }) => {
   return (
@@ -122,16 +112,7 @@ const DrawerMobile = ({
         </IconButton>
       </DrawerHeader>
       <Divider />
-      <List>
-        {sideMenu.map((item) => (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton LinkComponent={Link} to={item.path}>
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <Menu role={role} />
       <Divider />
       {children}
     </Drawer>
@@ -286,19 +267,6 @@ const LoginDialog = ({ open, handleClose, login }) => {
   );
 };
 
-const sideMenu = [
-  {
-    label: "Home",
-    path: "/",
-    icon: <HomeIcon />,
-  },
-  {
-    label: "Punti di interesse",
-    path: "/poi",
-    icon: <PlaceIcon />,
-  },
-];
-
 const Layout = () => {
   const theme = useTheme();
   const { toggleColorMode } = useThemeMode();
@@ -338,6 +306,9 @@ const Layout = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  console.log(user);
+  const role = user ? user.role : 'UNAUTH';
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -410,7 +381,7 @@ const Layout = () => {
           open={open}
           handleDrawerClose={handleDrawerClose}
           theme={theme}
-          sideMenu={sideMenu}
+          role={role}
         >
           <List>
             {!accessToken ? (
@@ -446,7 +417,7 @@ const Layout = () => {
             </ListItem>
           </List>
         </DrawerMobile>
-        <DrawerWeb sideMenu={sideMenu} />
+        <DrawerWeb role={role} />
       </Box>
       <Box
         component="main"
