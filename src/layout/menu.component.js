@@ -29,7 +29,7 @@ const CREATE_POI = {
 
 const LIST_POI = {
   label: "Lista",
-  path: "/poi/list",
+  path: "/poi",
   icon: <ListIcon />,
 };
 

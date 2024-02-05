@@ -1,9 +1,10 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@mui/material";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import placeIcon from "../../assets/place.svg";
-import { Icon } from "leaflet";
-import { useEffect, useMemo, useRef, useState } from "react";
+import MarkerClusterGroup from "react-leaflet-cluster";
 
 const customIcon = new Icon({
   iconUrl: placeIcon,
@@ -40,21 +41,21 @@ const DraggableMarker = ({ marker, updateMarker, draggable, children }) => {
   );
 };
 
-const Map = ({ center, markers = [], updateMarker }) => {
+const Map = ({ center, markers = [], updateMarker, zoom = 15 }) => {
   const [map, setMap] = useState(null);
   useEffect(() => {
     if (map) {
       const cent = center?.latitude
         ? [center.latitude, center.longitude]
         : DEFAULT_CENTER;
-      map.setView(cent, 15);
+      map.setView(cent, zoom);
     }
-  }, [center, map]);
+  }, [center, map, zoom]);
   return (
     <Container style={{ height: "300px" }}>
       <MapContainer
-        center={[center.latitude, center.longitude]}
-        zoom={15}
+        center={[center?.latitude || DEFAULT_CENTER[0], center?.longitude || DEFAULT_CENTER[1]]}
+        zoom={zoom}
         style={{ height: "100%", minHeight: "100%" }}
         ref={setMap}
       >
@@ -62,17 +63,18 @@ const Map = ({ center, markers = [], updateMarker }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        {markers.map((marker) => (
-          <DraggableMarker
-            key={marker.id}
-            draggable={marker.draggable}
-            marker={marker}
-            updateMarker={updateMarker}
-          >
-            {marker.label && <Popup>{marker.label}</Popup>}
-          </DraggableMarker>
-        ))}
+        <MarkerClusterGroup chunkedLoading>
+          {markers.map((marker) => (
+            <DraggableMarker
+              key={marker.id}
+              draggable={marker.draggable}
+              marker={marker}
+              updateMarker={updateMarker}
+            >
+              {<Popup>{marker.displayName}</Popup>}
+            </DraggableMarker>
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
     </Container>
   );
