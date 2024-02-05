@@ -307,7 +307,6 @@ const Layout = () => {
     setOpen(false);
   };
 
-  console.log(user);
   const role = user ? user.role : 'UNAUTH';
 
   return (

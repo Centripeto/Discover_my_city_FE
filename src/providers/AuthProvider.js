@@ -1,6 +1,6 @@
 import { useContext, createContext, useState } from "react";
 import { login as loginApi, whoami } from "../api/authentication";
-const AuthContext = createContext({ toggleColorMode: () => {} });
+const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(

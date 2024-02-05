@@ -3,6 +3,7 @@ import Home from "./home/home.component";
 import Layout from "./layout/layout.component";
 import AuthRouter from "./authentication/autentication.router";
 import PoiRouter from "./poi/poi.router";
+import PageNotFound from "./common/components/page-not-found.component";
 
 const appRoutes = [
     {
@@ -21,8 +22,13 @@ const appRoutes = [
                 path: "auth/*",
                 element: <AuthRouter />
             },
+            {
+                path:"*",
+                element: <PageNotFound />
+            }
         ]
-    }
+    },
+
 ];
 
 const AppRouter = () => useRoutes(appRoutes);
