@@ -39,7 +39,15 @@ const APPROVE_POI = {
   icon: <DoneAllIcon />,
 };
 
-const noAuthMenu = [HOME];
+const noAuthMenu = [
+  HOME,
+  {
+    label: "Punti di interesse",
+    collapse: true,
+    icon: <PlaceIcon />,
+    subMenu: [LIST_POI],
+  },
+];
 
 const contributorMenu = [
   HOME,
@@ -71,9 +79,21 @@ const curatoreMenu = [
   },
 ];
 
+const adminMenu = [
+  HOME,
+  {
+    label: "Punti di interesse",
+    collapse: true,
+    icon: <PlaceIcon />,
+    subMenu: [CREATE_POI, LIST_POI, APPROVE_POI],
+  },
+];
+
 const getMenu = (role) => {
   switch (role) {
     case "ADMIN":
+      return adminMenu;
+    case "CURATORE":
       return curatoreMenu;
     case "CONTRIBUTOR":
       return contributorMenu;

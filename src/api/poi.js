@@ -30,6 +30,6 @@ export const getPois = (accessToken, search) =>
         pageNumber: search.pageNumber
       },
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: accessToken ? `Bearer ${accessToken}` : null,
       },
     }).then((response) => response.response);

@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -121,11 +121,13 @@ const DrawerMobile = ({
 
 const LogoutDialog = ({ open, handleClose, logout }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const handleLogout = async () => {
     try {
       await logout();
       handleClose();
+      navigate("/");
     } catch (err) {
       console.error(err);
     }
@@ -156,6 +158,7 @@ const LogoutDialog = ({ open, handleClose, logout }) => {
 
 const LoginDialog = ({ open, handleClose, login }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [showPassword, setShowPassword] = useState(false);
   const {
@@ -180,6 +183,7 @@ const LoginDialog = ({ open, handleClose, login }) => {
     try {
       login({ username: form.username, password: form.password });
       handleClose();
+      navigate("/");
     } catch (ex) {
       // TODO handle message
       console.log(ex);
