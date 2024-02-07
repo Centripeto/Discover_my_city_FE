@@ -139,7 +139,6 @@ const CollapseItem = ({ item }) => {
 };
 
 const Menu = ({ role }) => {
-  console.log(role);
   const menu = getMenu(role);
   return (
     <List>

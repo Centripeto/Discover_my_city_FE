@@ -27,7 +27,8 @@ export const getPois = (accessToken, search) =>
     .get(`/${ROUTE}/`, {
       params: {
         pageSize: search.pageSize,
-        pageNumber: search.pageNumber
+        pageNumber: search.pageNumber,
+        status: search.status
       },
       headers: {
         Authorization: accessToken ? `Bearer ${accessToken}` : null,

@@ -92,7 +92,7 @@ const PoiList = () => {
         </TableHead>
             <TableBody>
               {pois.map((row) => (
-                <TableRow key={row.name}>
+                <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>

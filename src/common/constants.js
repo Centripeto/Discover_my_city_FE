@@ -4,3 +4,8 @@ export const ROLE = Object.freeze({
     AUTH_CONTRIBUTOR: 'AUTH_CONTRIBUTOR',
     CURATORE: 'CURATORE'
 });
+
+export const POI_STATUS = Object.freeze({
+  IN_APPROVAL: 'IN_APPROVAL',
+  APPROVED: 'APPROVED'
+});
