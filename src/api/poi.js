@@ -28,9 +28,36 @@ export const getPois = (accessToken, search) =>
       params: {
         pageSize: search.pageSize,
         pageNumber: search.pageNumber,
-        status: search.status
+        status: search.status,
       },
       headers: {
         Authorization: accessToken ? `Bearer ${accessToken}` : null,
       },
-    }).then((response) => response.response);
+    })
+    .then((response) => response.response);
+
+export const rejectPoi = (accessToken, id) =>
+  httpClient
+    .put(
+      `/${ROUTE}/reject/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+    .then((response) => response.response);
+
+export const approvePoi = (accessToken, id) =>
+  httpClient
+    .put(
+      `/${ROUTE}/approve/${id}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    )
+    .then((response) => response.response);

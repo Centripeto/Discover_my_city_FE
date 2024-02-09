@@ -1,9 +1,16 @@
 import {
   Box,
+  Button,
   Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Grid,
   IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +19,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  useMediaQuery,
 } from "@mui/material";
 import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
@@ -24,11 +32,16 @@ import { useEffect, useState } from "react";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import Map from "../../components/map.component";
+import DoneIcon from "@mui/icons-material/Done";
+import BlockIcon from "@mui/icons-material/Block";
+import { approvePoi, rejectPoi } from "../../../api/poi";
+import { useAuth } from "../../../providers/AuthProvider";
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_PAGE_NUMBER = 0;
 
 const ApprovePoi = () => {
+  const { accessToken } = useAuth();
   const { pois, fetch } = usePoiList({
     pageNumber: DEFAULT_PAGE_NUMBER,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -58,6 +71,28 @@ const ApprovePoi = () => {
     });
   };
 
+  const onReject = (id, clbk) => {
+    rejectPoi(accessToken, id).then(() => {
+      clbk && clbk();
+      fetch({
+        status: POI_STATUS.IN_APPROVAL,
+        pageNumber: DEFAULT_PAGE_NUMBER,
+        pageSize: DEFAULT_PAGE_SIZE,
+      });
+    });
+  };
+
+  const onApprove = (id, clbk) => {
+    approvePoi(accessToken, id).then(() => {
+      clbk && clbk();
+      fetch({
+        status: POI_STATUS.IN_APPROVAL,
+        pageNumber: DEFAULT_PAGE_NUMBER,
+        pageSize: DEFAULT_PAGE_SIZE,
+      });
+    });
+  };
+
   return (
     <Grid container item xs={12} spacing={3}>
       <Grid item xs={12}>
@@ -74,7 +109,12 @@ const ApprovePoi = () => {
             </TableHead>
             <TableBody>
               {pois.list.map((poi) => (
-                <PoiRow key={poi.id} poi={poi} />
+                <PoiRow
+                  key={poi.id}
+                  poi={poi}
+                  onReject={onReject}
+                  onApprove={onApprove}
+                />
               ))}
             </TableBody>
             <TableFooter>
@@ -160,8 +200,23 @@ function TablePaginationActions(props) {
   );
 }
 
-const PoiRow = ({ poi }) => {
+const PoiRow = ({ poi, onApprove, onReject }) => {
   const [open, setOpen] = useState(false);
+  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+  const [openApproveDialog, setOpenApproveDialog] = useState(false);
+
+  const handleOpenRejectDialog = () => setOpenRejectDialog(true);
+  const handleCloseRejectDialog = () => setOpenRejectDialog(false);
+  const handleOpenApproveDialog = () => setOpenApproveDialog(true);
+  const handleCloseApproveDialog = () => setOpenApproveDialog(false);
+
+  const handleApprove = () => {
+    onApprove(poi.id, handleCloseApproveDialog);
+  };
+
+  const handleReject = () => {
+    onReject(poi.id, handleCloseRejectDialog);
+  };
 
   return (
     <>
@@ -185,7 +240,24 @@ const PoiRow = ({ poi }) => {
           {poi.creator.name} {poi.creator.lastname}
         </TableCell>
         <TableCell component="th" scope="row">
-          APPROVA RIMUOVI
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              startIcon={<BlockIcon />}
+              color="error"
+              onClick={handleOpenRejectDialog}
+            >
+              Rifiuta
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleOpenApproveDialog}
+              startIcon={<DoneIcon />}
+              color="success"
+            >
+              Approva
+            </Button>
+          </Stack>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -204,7 +276,52 @@ const PoiRow = ({ poi }) => {
           </Collapse>
         </TableCell>
       </TableRow>
+      {openApproveDialog ? (
+        <ConfirmDialog
+          key={poi.id + "approve-dialog"}
+          open={openApproveDialog}
+          handleClose={handleCloseApproveDialog}
+          callback={handleApprove}
+          title="Approva"
+          content="Sei sicuro di voler approvare?"
+        />
+      ) : null}
+      {openRejectDialog ? (
+        <ConfirmDialog
+          key={poi.id + "reject-dialog"}
+          open={openRejectDialog}
+          handleClose={handleCloseRejectDialog}
+          callback={handleReject}
+          title="Rifiuta"
+          content="Sei sicuro di voler rifiutare?"
+        />
+      ) : null}
     </>
+  );
+};
+
+const ConfirmDialog = ({ open, handleClose, callback, title, content }) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+
+  return (
+    <Dialog
+      fullScreen={fullScreen}
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="logout-dialog"
+    >
+      <DialogTitle>{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText>{content}</DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} autoFocus>
+          No
+        </Button>
+        <Button onClick={callback}>Si</Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 
