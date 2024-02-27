@@ -12,6 +12,7 @@ import { searchGeo } from "../../../api/public";
 import { debounce } from "lodash";
 import { createPoi } from "../../../api/poi";
 import { useAuth } from "../../../providers/AuthProvider";
+import { useToast } from "../../../providers/ToastProvider";
 
 const CreatePoi = () => {
   const { accessToken } = useAuth();
@@ -21,11 +22,13 @@ const CreatePoi = () => {
     getValues,
     setValue,
     trigger,
+    reset,
     formState: { errors, submitCount, isValid },
   } = useForm({
     defaultValues: {},
   });
 
+  const { dispatch } = useToast();
   const searchGeoAbortController = useRef();
 
   const [options, setOptions] = useState([]);
@@ -78,10 +81,24 @@ const CreatePoi = () => {
       name: form.title,
       description: form.description,
       coordinate: {
-          longitude: form.coordinate.longitude,
-          latitude: form.coordinate.latitude
-      }
-    });
+        longitude: form.coordinate.longitude,
+        latitude: form.coordinate.latitude,
+      },
+    })
+      .then(() => {
+        const payload = {
+          severity: "success",
+          message: "POI creato correttamente",
+        };
+        dispatch({ type: "open", payload });
+        reset();
+        setValue("coordinate", null);
+        trigger("coordinate");
+      })
+      .catch((err) => {
+        const payload = { severity: "error", message: err };
+        dispatch({ type: "open", payload });
+      });
   };
 
   const markers = getValues("coordinate")

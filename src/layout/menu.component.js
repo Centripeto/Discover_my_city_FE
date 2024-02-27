@@ -97,7 +97,7 @@ const adminMenu = [
     label: "Punti di interesse",
     collapse: true,
     icon: <PlaceIcon />,
-    subMenu: [CREATE_POI, LIST_POI],
+    subMenu: [LIST_POI],
   },
   {
     label: "Amministrazione",

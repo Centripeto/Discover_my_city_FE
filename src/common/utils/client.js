@@ -12,7 +12,11 @@ const client = axios.create({
 
 client.interceptors.response.use(
   (response) => response.data,
-  (error) => Promise.reject(error)
+  (error) => {
+    const message =
+      error.response?.data?.message || "Si è verificato un errore insolito";
+    return Promise.reject(message);
+  }
 );
 
 export default client;
