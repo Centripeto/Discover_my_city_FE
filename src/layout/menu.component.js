@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { ExpandLess, ExpandMore, AdminPanelSettings, PersonAdd, LocationCity } from "@mui/icons-material";
 
 const HOME = {
   label: "Home",
@@ -37,6 +37,18 @@ const APPROVE_POI = {
   label: "Approva",
   path: "/poi/approve",
   icon: <DoneAllIcon />,
+};
+
+const CREATE_USER = {
+  label: "Crea Utente",
+  path: "/user/create",
+  icon: <PersonAdd />,
+};
+
+const CREATE_MUNICIPALITY = {
+  label: "Crea Municipio",
+  path: "/municipality/create",
+  icon: <LocationCity />,
 };
 
 const noAuthMenu = [
@@ -85,7 +97,13 @@ const adminMenu = [
     label: "Punti di interesse",
     collapse: true,
     icon: <PlaceIcon />,
-    subMenu: [CREATE_POI, LIST_POI, APPROVE_POI],
+    subMenu: [CREATE_POI, LIST_POI],
+  },
+  {
+    label: "Amministrazione",
+    collapse: true,
+    icon: <AdminPanelSettings />,
+    subMenu: [CREATE_USER, CREATE_MUNICIPALITY],
   },
 ];
 

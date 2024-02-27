@@ -70,7 +70,6 @@ const CreatePoi = () => {
   );
 
   const updateMarker = (marker, coordinates) => {
-    console.log("update", coordinates)
     setValue("coordinate", { ...marker, ...coordinates });
   };
 

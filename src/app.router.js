@@ -3,6 +3,7 @@ import Home from "./home/home.component";
 import Layout from "./layout/layout.component";
 import PoiRouter from "./poi/poi.router";
 import PageNotFound from "./common/components/page-not-found.component";
+import MunicipalityRouter from "./municipality/municipality.router";
 
 const appRoutes = [
     {
@@ -16,6 +17,10 @@ const appRoutes = [
             {
                 path: "poi/*",
                 element: <PoiRouter />
+            },
+            {
+                path: "municipality/*",
+                element: <MunicipalityRouter />
             },
             {
                 path:"*",

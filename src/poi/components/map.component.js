@@ -1,10 +1,32 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@mui/material";
-import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
+import {
+  FeatureGroup,
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+} from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import placeIcon from "../../assets/place.svg";
 import MarkerClusterGroup from "react-leaflet-cluster";
+import { EditControl } from "react-leaflet-draw";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
+
+// work around broken icons when using webpack, see https://github.com/PaulLeCam/react-leaflet/issues/255
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0/images/marker-shadow.png",
+});
 
 const customIcon = new Icon({
   iconUrl: placeIcon,
@@ -28,6 +50,7 @@ const DraggableMarker = ({ marker, updateMarker, draggable, children }) => {
     }),
     [updateMarker]
   );
+
   return (
     <Marker
       draggable={draggable}
@@ -41,8 +64,18 @@ const DraggableMarker = ({ marker, updateMarker, draggable, children }) => {
   );
 };
 
-const Map = ({ center, markers = [], updateMarker, zoom = 15 }) => {
+const Map = ({
+  center,
+  markers = [],
+  updateMarker,
+  zoom = 15,
+  edit = false,
+  edges = [],
+}) => {
   const [map, setMap] = useState(null);
+  const lastLayerRef = useRef();
+  const featureGroupRef = useRef();
+
   useEffect(() => {
     if (map) {
       const cent = center?.latitude
@@ -51,10 +84,53 @@ const Map = ({ center, markers = [], updateMarker, zoom = 15 }) => {
       map.setView(cent, zoom);
     }
   }, [center, map, zoom]);
+
+  const onCreated = (e) => {
+    let type = e.layerType;
+    if (type === "polygon") {
+      lastLayerRef.current = e.layer;
+      console.log("shape created", e.layer.getLatLngs()[0]);
+    }
+  };
+
+  const onDeleted = (e) => {
+    const deleted = e.layers.getLayers().length > 0;
+    if (deleted) {
+      console.log("shape delete", e.layers.getLayers()[0]);
+    }
+  };
+
+  useEffect(() => {
+    if (featureGroupRef.current && edges?.length > 0) {
+      const geoGson = new L.GeoJSON({
+        type: "Feature",
+        properties: {},
+        geometry: {
+          type: "Polygon",
+          coordinates: [edges.map((edge) => [edge.longitude, edge.latitude])],
+        },
+      });
+      geoGson.eachLayer((layer) => {
+        lastLayerRef.current = layer;
+        featureGroupRef.current.addLayer(layer);
+      });
+    }
+  }, [featureGroupRef.current]);
+
+  const onDrawStart = () => {
+    if (featureGroupRef.current && lastLayerRef.current) {
+      featureGroupRef.current.removeLayer(lastLayerRef.current);
+      lastLayerRef.current = null;
+    }
+  };
+
   return (
     <Container style={{ height: "300px" }}>
       <MapContainer
-        center={[center?.latitude || DEFAULT_CENTER[0], center?.longitude || DEFAULT_CENTER[1]]}
+        center={[
+          center?.latitude || DEFAULT_CENTER[0],
+          center?.longitude || DEFAULT_CENTER[1],
+        ]}
         zoom={zoom}
         style={{ height: "100%", minHeight: "100%" }}
         ref={setMap}
@@ -63,6 +139,25 @@ const Map = ({ center, markers = [], updateMarker, zoom = 15 }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        {edit ? (
+          <FeatureGroup ref={featureGroupRef}>
+            <EditControl
+              position="topright"
+              onCreated={onCreated}
+              onDeleted={onDeleted}
+              onDrawStart={onDrawStart}
+              edit={{ remove: true, edit: true }}
+              draw={{
+                polygon: { allowIntersection: false },
+                rectangle: false,
+                circle: false,
+                circlemarker: false,
+                marker: false,
+                polyline: false,
+              }}
+            />
+          </FeatureGroup>
+        ) : null}
         <MarkerClusterGroup chunkedLoading>
           {markers.map((marker) => (
             <DraggableMarker
