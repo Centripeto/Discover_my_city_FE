@@ -13,6 +13,7 @@ export const createPoi = (accessToken, poi) =>
           longitude: poi.coordinate.longitude,
           latitude: poi.coordinate.latitude,
         },
+        municipality: poi.municipality
       },
       {
         headers: {

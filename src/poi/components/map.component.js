@@ -115,7 +115,7 @@ const Map = ({
         featureGroupRef.current.addLayer(layer);
       });
     }
-  }, [featureGroupRef.current]);
+  }, [featureGroupRef.current, edges]);
 
   const onDrawStart = () => {
     if (featureGroupRef.current && lastLayerRef.current) {
@@ -139,8 +139,8 @@ const Map = ({
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {edit ? (
-          <FeatureGroup ref={featureGroupRef}>
+        <FeatureGroup ref={featureGroupRef}>
+          {edit ? (
             <EditControl
               position="topright"
               onCreated={onCreated}
@@ -156,8 +156,8 @@ const Map = ({
                 polyline: false,
               }}
             />
-          </FeatureGroup>
-        ) : null}
+          ) : null}
+        </FeatureGroup>
         <MarkerClusterGroup chunkedLoading>
           {markers.map((marker) => (
             <DraggableMarker

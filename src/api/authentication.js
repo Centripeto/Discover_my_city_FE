@@ -18,4 +18,5 @@ httpClient.get(`/user/whoami`, {
   username: response.response.username,
   lastname: response.response.lastname,
   role: response.response.role,
+  municipality: response.response.municipalityDto
 }));

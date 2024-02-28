@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import Map from "../../components/map.component";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { searchGeo } from "../../../api/public";
 import { debounce } from "lodash";
 import { createPoi } from "../../../api/poi";
@@ -15,7 +15,7 @@ import { useAuth } from "../../../providers/AuthProvider";
 import { useToast } from "../../../providers/ToastProvider";
 
 const CreatePoi = () => {
-  const { accessToken } = useAuth();
+  const { accessToken, user } = useAuth();
   const {
     handleSubmit,
     register,
@@ -32,8 +32,20 @@ const CreatePoi = () => {
   const searchGeoAbortController = useRef();
 
   const [options, setOptions] = useState([]);
-  // const [searchText, setSearchText] = useState(null);
+
+
   const [center, setCenter] = useState({ longitude: 0, latitude: 0 });
+
+  useEffect(() => {
+    const size = user.municipality?.edges?.length || 0;
+    if(size > 0) {
+      const {latitudeSum, longitudeSum} = user.municipality.edges.reduce((acc, next) => ({
+        latitudeSum: acc.latitudeSum + next.latitude,
+        longitudeSum: acc.longitudeSum + next.longitude,
+      }), {latitudeSum:0, longitudeSum:0});
+      setCenter({ latitude: latitudeSum / size, longitude: longitudeSum / size })
+    }
+  }, [user])
 
   const title = register("title", {
     required: "Required",
@@ -104,6 +116,8 @@ const CreatePoi = () => {
   const markers = getValues("coordinate")
     ? [{ ...getValues("coordinate"), id: 1, draggable: true }]
     : [];
+
+    console.log(user);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={1}>
@@ -173,6 +187,7 @@ const CreatePoi = () => {
                 center={center || {}}
                 markers={markers}
                 updateMarker={updateMarker}
+                edges={user?.municipality?.edges || []}
               />
             </Grid>
           </Grid>

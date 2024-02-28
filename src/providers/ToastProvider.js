@@ -21,7 +21,6 @@ const toastReducer = (state, action) => {
 const ToastProvider = ({ children }) => {
   const [toastState, dispatch] = useReducer(toastReducer, { open: false });
   const onClose = () => dispatch({ type: "close" });
-  console.log(toastState);
 
   return (
     <ToastContext.Provider value={{ dispatch }}>

@@ -29,7 +29,8 @@ const mapPoi = (poi) => ({
   name: poi.name,
   description: poi.description,
   displayName: poi.name,
-  status: poi.status
+  status: poi.status,
+  municipality: poi.municipality
 });
 
 const PoiList = () => {
@@ -83,6 +84,7 @@ const PoiList = () => {
           <Table sx={{ minWidth: 500 }} aria-label="poi table">
           <TableHead>
           <TableRow>
+            <TableCell>Comune</TableCell>
             <TableCell>Nome</TableCell>
             <TableCell>Descrizione</TableCell>
             <TableCell>Stato</TableCell>
@@ -93,6 +95,9 @@ const PoiList = () => {
             <TableBody>
               {pois.map((row) => (
                 <TableRow key={row.id}>
+                  <TableCell component="th" scope="row">
+                    {row.municipality.name}
+                  </TableCell>
                   <TableCell component="th" scope="row">
                     {row.name}
                   </TableCell>
