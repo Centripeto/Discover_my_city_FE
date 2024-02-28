@@ -2,6 +2,7 @@ import {
   Autocomplete,
   Button,
   FormControl,
+  FormHelperText,
   Grid,
   TextField,
 } from "@mui/material";
@@ -16,6 +17,7 @@ import { useToast } from "../../../providers/ToastProvider";
 
 const CreatePoi = () => {
   const { accessToken, user } = useAuth();
+  const { dispatch } = useToast();
   const {
     handleSubmit,
     register,
@@ -27,8 +29,6 @@ const CreatePoi = () => {
   } = useForm({
     defaultValues: {},
   });
-
-  const { dispatch } = useToast();
   const searchGeoAbortController = useRef();
 
   const [options, setOptions] = useState([]);
@@ -177,6 +177,7 @@ const CreatePoi = () => {
                   />
                 )}
               />
+              {errors.coordinate ? <FormHelperText error>Selezionare punto di interesse sulla mappa</FormHelperText> : null }
             </Grid>
           </Grid>
         </Grid>

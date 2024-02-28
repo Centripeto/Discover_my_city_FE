@@ -71,6 +71,7 @@ const Map = ({
   zoom = 15,
   edit = false,
   edges = [],
+  onCreateShape = () => {}
 }) => {
   const [map, setMap] = useState(null);
   const lastLayerRef = useRef();
@@ -90,6 +91,7 @@ const Map = ({
     if (type === "polygon") {
       lastLayerRef.current = e.layer;
       console.log("shape created", e.layer.getLatLngs()[0]);
+      onCreateShape(e.layer.getLatLngs()[0].map(el => ({ latitude: el.lat, longitude:el.lng})));
     }
   };
 
