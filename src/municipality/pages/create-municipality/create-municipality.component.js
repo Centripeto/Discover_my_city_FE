@@ -10,10 +10,12 @@ import { useForm } from "react-hook-form";
 import { createMunicipality } from "../../../api/municipality";
 import { useToast } from "../../../providers/ToastProvider";
 import { useAuth } from "../../../providers/AuthProvider";
+import { useEffect, useState } from "react";
 
 const CreateMunicipality = () => {
   const { accessToken } = useAuth();
   const { dispatch } = useToast();
+  const [center, setCenter] = useState({ });
   const {
     handleSubmit,
     register,
@@ -25,6 +27,17 @@ const CreateMunicipality = () => {
   } = useForm({
     defaultValues: {},
   });
+
+  useEffect(() => {
+    const size = getValues('edges')?.length || 0;
+    if(size > 0) {
+      const {latitudeSum, longitudeSum} = getValues('edges').reduce((acc, next) => ({
+        latitudeSum: acc.latitudeSum + next.latitude,
+        longitudeSum: acc.longitudeSum + next.longitude,
+      }), {latitudeSum:0, longitudeSum:0});
+      setCenter({ latitude: latitudeSum / size, longitude: longitudeSum / size })
+    }
+  }, [getValues('edges')])
 
   const name = register("name", {
     required: "Required",
@@ -108,7 +121,7 @@ const CreateMunicipality = () => {
         <Grid container item xs={12} sm={6} spacing={3}>
           <Grid item xs={12}>
             <Map
-              center={{}}
+              center={center}
               markers={[]}
               edit
               onCreateShape={onCreateShape}

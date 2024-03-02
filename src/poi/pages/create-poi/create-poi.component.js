@@ -117,7 +117,6 @@ const CreatePoi = () => {
     ? [{ ...getValues("coordinate"), id: 1, draggable: true }]
     : [];
 
-    console.log(user);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container spacing={1}>
